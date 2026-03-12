@@ -9,6 +9,9 @@ clock = pygame.time.Clock()
 player_sprite = pygame.image.load("sprite_sprite.png").convert_alpha()
 player_sprite = pygame.transform.scale(player_sprite, (50, 65))
 
+coin_sprite = pygame.image.load("cola.png").convert_alpha()
+coin_sprite = pygame.transform.scale(coin_sprite, (50, 50))
+
 player_rect = pygame.Rect(400, 300, 50, 65)
 player_speed = 5
 velocity_y = 0
@@ -24,22 +27,19 @@ coins = []
 for i in range(5):
     x = random.randint(50, 750)
     y = random.randint(200, 450)
-    coins.append(pygame.Rect(x, y, 25, 25))
+    coins.append(pygame.Rect(x, y, 50, 50))
 
 game_won = False
 font = pygame.font.SysFont("Arial", 36)
 
 def reset_game():
-    global player_rect, velocity_y, coins, coins_left, game_won
-
-    player_rect = pygame.Rect(400, 300, 50, 50)
-    velocity_y = 0
+    global coins, coins_left, game_won
 
     coins = []
     for i in range(5):
         x = random.randint(50, 750)
         y = random.randint(200, 450)
-        coins.append(pygame.Rect(x, y, 25, 25))
+        coins.append(pygame.Rect(x, y, 50, 50))
 
     coins_left = 5
     game_won = False
@@ -96,7 +96,7 @@ while True:
         pygame.draw.rect(screen, floor_color, floor)
 
         for coin in coins:
-            pygame.draw.ellipse(screen, coin_color, coin)
+            screen.blit(coin_sprite, coin)
 
     else:
         win_text = font.render("YOU WIN!", True, (0,0,0))
