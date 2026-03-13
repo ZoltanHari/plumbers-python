@@ -12,16 +12,25 @@ player_sprite = pygame.transform.scale(player_sprite, (50, 65))
 coin_sprite = pygame.image.load("cola.png").convert_alpha()
 coin_sprite = pygame.transform.scale(coin_sprite, (50, 50))
 
-player_rect = pygame.Rect(400, 300, 50, 65)
+player_rect = pygame.Rect(400, 100, 50, 65)
 player_speed = 5
 velocity_y = 0
+
 gravity = 1
 color = (255, 0, 0)
+
 floor = pygame.Rect(0, 500, 800, 100)
 floor_color = (202, 122, 233)
 on_floor = True
+
 coins_left = 5
 coin_color = (255, 255, 100)
+
+lava = pygame.Rect(300, 470, 150, 30)
+lava_color = (255, 100, 0)
+start_pos = (400, floor.y - player_rect.height)
+
+lives = 2
 
 coins = []
 for i in range(5):
@@ -29,11 +38,21 @@ for i in range(5):
     y = random.randint(200, 450)
     coins.append(pygame.Rect(x, y, 50, 50))
 
+def spawn_lava():
+    while True:
+        x = random.randint(0, 600)
+        lava_rect = pygame.Rect(x, 470, 150, 30)
+
+        if not lava_rect.colliderect(player_rect): 
+            return lava_rect
+
 game_won = False
 font = pygame.font.SysFont("Arial", 36)
 
 def reset_game():
-    global coins, coins_left, game_won
+    global coins, coins_left, game_won, lava, lives
+
+    player_rect.topleft = start_pos
 
     coins = []
     for i in range(5):
@@ -43,6 +62,10 @@ def reset_game():
 
     coins_left = 5
     game_won = False
+
+    lives = 2
+
+    lava = spawn_lava()
     
 while True:
     for event in pygame.event.get():
@@ -68,6 +91,14 @@ while True:
         on_floor = False
         velocity_y += gravity
 
+    if player_rect.colliderect(lava):
+        lives -= 1
+        player_rect.topleft = start_pos
+        velocity_y = 0
+
+        if lives <= 0:
+            reset_game()
+
     if keys[pygame.K_UP]:
         if on_floor:
             velocity_y -= 24
@@ -89,11 +120,14 @@ while True:
 
     if not game_won:
 
-        text_surface = font.render(str(coins_left), True, (0,0,0))
-        screen.blit(text_surface, (400,100))
+        lives_text = font.render("Lives: " + str(lives), True, (0,0,0))
+        screen.blit(lives_text, (50, 50))
+        text_surface = font.render("Coins Left: " + str(coins_left), True, (0,0,0))
+        screen.blit(text_surface, (300,100))
 
         screen.blit(player_sprite, player_rect)
         pygame.draw.rect(screen, floor_color, floor)
+        pygame.draw.rect(screen, lava_color, lava)
 
         for coin in coins:
             screen.blit(coin_sprite, coin)
