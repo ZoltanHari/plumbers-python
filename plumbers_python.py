@@ -47,10 +47,11 @@ def spawn_lava():
             return lava_rect
 
 game_won = False
+game_lose = False
 font = pygame.font.SysFont("Arial", 36)
 
 def reset_game():
-    global coins, coins_left, game_won, lava, lives
+    global coins, coins_left, game_won, game_lose, lava, lives
 
     player_rect.topleft = start_pos
 
@@ -62,6 +63,7 @@ def reset_game():
 
     coins_left = 5
     game_won = False
+    game_lose = False
 
     lives = 2
 
@@ -97,7 +99,7 @@ while True:
         velocity_y = 0
 
         if lives <= 0:
-            reset_game()
+            game_lose = True
 
     if keys[pygame.K_UP]:
         if on_floor:
@@ -118,7 +120,7 @@ while True:
 
     screen.fill((135, 206, 235))
 
-    if not game_won:
+    if not game_won and not game_lose:
 
         lives_text = font.render("Lives: " + str(lives), True, (0,0,0))
         screen.blit(lives_text, (50, 50))
@@ -132,10 +134,16 @@ while True:
         for coin in coins:
             screen.blit(coin_sprite, coin)
 
-    else:
+    elif game_won:
         win_text = font.render("YOU WIN!", True, (0,0,0))
         restart_text = font.render("Press R to Restart", True, (0,0,0))
         screen.blit(win_text, (330,250))
+        screen.blit(restart_text, (290,300))
+
+    elif game_lose:
+        lose_text = font.render("YOU DIED!", True, (0,0,0))
+        restart_text = font.render("Press R to Restart", True, (0,0,0))
+        screen.blit(lose_text, (330,250))
         screen.blit(restart_text, (290,300))
 
     pygame.display.flip()
